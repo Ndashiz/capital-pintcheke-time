@@ -117,17 +117,6 @@ const Index = () => {
               <h1 className="mb-8 text-4xl font-bold text-primary md:text-6xl">
                 Yes bruv, it's time to propose a pintcheke to your colleagues
               </h1>
-              <div className="mb-8 overflow-hidden rounded-2xl border-4 border-primary/30">
-                <iframe
-                  src="https://giphy.com/embed/l0IykI5OLMkal48s8"
-                  width="480"
-                  height="270"
-                  className="w-full"
-                  frameBorder="0"
-                  allowFullScreen
-                  title="Trump Dancing"
-                />
-              </div>
               <div className="mb-8 flex items-center justify-center gap-4">
                 <Button
                   onClick={togglePlay}
