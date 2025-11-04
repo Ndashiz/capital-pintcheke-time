@@ -69,7 +69,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (isPlaying) {
+    if (view === "result" && isThursday) {
       const interval = setInterval(() => {
         setBeers((prev) => [
           ...prev,
@@ -85,7 +85,7 @@ const Index = () => {
     } else {
       setBeers([]);
     }
-  }, [isPlaying]);
+  }, [view, isThursday]);
 
   if (view === "loading") {
     return <BeerLoading />;
@@ -94,7 +94,7 @@ const Index = () => {
   if (view === "result") {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
-        {isThursday && isPlaying && (
+        {isThursday && (
           <div className="absolute inset-0 pointer-events-none">
             {beers.map((beer) => (
               <div
