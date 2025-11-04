@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import BeerLoading from "@/components/BeerLoading";
+import { Play, Pause } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,9 @@ const Index = () => {
   const [isThursday, setIsThursday] = useState(false);
   const [simulatedDay, setSimulatedDay] = useState<number | null>(null);
   const [devDialogOpen, setDevDialogOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [beers, setBeers] = useState<Array<{ id: number; x: number; delay: number }>>([]);
 
   const checkIfThursday = () => {
     const today = simulatedDay !== null ? simulatedDay : new Date().getDay();
@@ -46,7 +50,42 @@ const Index = () => {
 
   const handleReset = () => {
     setView("question");
+    setIsPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
   };
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  useEffect(() => {
+    if (isPlaying) {
+      const interval = setInterval(() => {
+        setBeers((prev) => [
+          ...prev,
+          {
+            id: Date.now(),
+            x: Math.random() * 100,
+            delay: 0,
+          },
+        ]);
+      }, 400);
+
+      return () => clearInterval(interval);
+    } else {
+      setBeers([]);
+    }
+  }, [isPlaying]);
 
   if (view === "loading") {
     return <BeerLoading />;
@@ -54,8 +93,25 @@ const Index = () => {
 
   if (view === "result") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <div className="max-w-2xl text-center">
+      <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
+        {isThursday && isPlaying && (
+          <div className="absolute inset-0 pointer-events-none">
+            {beers.map((beer) => (
+              <div
+                key={beer.id}
+                className="absolute text-6xl animate-[fall_3s_linear_forwards] opacity-80"
+                style={{
+                  left: `${beer.x}%`,
+                  top: "-100px",
+                  animationDelay: `${beer.delay}s`,
+                }}
+              >
+                🍺
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="max-w-2xl text-center relative z-10">
           {isThursday ? (
             <>
               <h1 className="mb-8 text-4xl font-bold text-primary md:text-6xl">
@@ -72,6 +128,17 @@ const Index = () => {
                   title="Trump Dancing"
                 />
               </div>
+              <div className="mb-8 flex items-center justify-center gap-4">
+                <Button
+                  onClick={togglePlay}
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  {isPlaying ? <Pause className="mr-2 h-5 w-5" /> : <Play className="mr-2 h-5 w-5" />}
+                  {isPlaying ? "Pause" : "Play Le Capital"}
+                </Button>
+              </div>
+              <audio ref={audioRef} src="/le-capital.mp3" />
             </>
           ) : (
             <h1 className="mb-8 text-4xl font-bold text-muted-foreground md:text-6xl">
