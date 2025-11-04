@@ -1,15 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import BeerLoading from "@/components/BeerLoading";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type ViewState = "question" | "loading" | "result";
+
+const DAYS = [
+  { value: 0, label: "Sunday" },
+  { value: 1, label: "Monday" },
+  { value: 2, label: "Tuesday" },
+  { value: 3, label: "Wednesday" },
+  { value: 4, label: "Thursday" },
+  { value: 5, label: "Friday" },
+  { value: 6, label: "Saturday" },
+];
 
 const Index = () => {
   const [view, setView] = useState<ViewState>("question");
   const [isThursday, setIsThursday] = useState(false);
+  const [simulatedDay, setSimulatedDay] = useState<number | null>(null);
+  const [devDialogOpen, setDevDialogOpen] = useState(false);
 
   const checkIfThursday = () => {
-    const today = new Date().getDay();
+    const today = simulatedDay !== null ? simulatedDay : new Date().getDay();
     return today === 4; // Thursday is 4 in JavaScript (0 = Sunday)
   };
 
@@ -84,6 +104,53 @@ const Index = () => {
           Answer
         </Button>
       </div>
+
+      <Dialog open={devDialogOpen} onOpenChange={setDevDialogOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="fixed bottom-4 right-4"
+          >
+            Developer Mode
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Simulate a Day</DialogTitle>
+            <DialogDescription>
+              Select a day to simulate for testing purposes
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-4">
+            {DAYS.map((day) => (
+              <Button
+                key={day.value}
+                variant={simulatedDay === day.value ? "default" : "outline"}
+                onClick={() => {
+                  setSimulatedDay(day.value);
+                  setDevDialogOpen(false);
+                }}
+                className="w-full"
+              >
+                {day.label}
+              </Button>
+            ))}
+            {simulatedDay !== null && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setSimulatedDay(null);
+                  setDevDialogOpen(false);
+                }}
+                className="w-full mt-2"
+              >
+                Reset to Real Day
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
