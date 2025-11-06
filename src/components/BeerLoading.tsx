@@ -38,6 +38,9 @@ const BeerLoading = () => {
           </div>
         </div>
         <p className="text-2xl font-bold text-primary">Pouring your beer...</p>
+        <p className="mt-4 text-sm text-muted-foreground italic">
+          Alcohol abuse can damage your reputation and your year-end review.
+        </p>
       </div>
     </div>
   );
